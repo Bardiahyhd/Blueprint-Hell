@@ -15,6 +15,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage PrimaryStage) throws Exception {
+        Config.LoadConfig();
+
         PrimaryStage.setWidth(StageWidth);
         PrimaryStage.setHeight(StageHeight);
 
