@@ -1,2 +1,2 @@
-Hello people! 
+Hello people! \n
 this is a game in process...
