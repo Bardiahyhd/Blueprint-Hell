@@ -27,3 +27,7 @@ public class Main extends Application {
         PrimaryStage.show();
     }
 }
+
+// the light should only turn on when the wires are fully connected for one system before playing the game
+// game should be playable only when all the systems have their lights on
+// we have limited amount of wire to use and we should show it in a bar in the game
