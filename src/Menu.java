@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.security.PrivilegedAction;
 
 public class Menu {
@@ -38,6 +39,11 @@ public class Menu {
 
         Button exit = ButtonConfig.Button("Exit", +2);
         exit.setOnAction( e -> {
+            try {
+                Config.RefreshConfig();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             PrimaryStage.close();
         });
 
