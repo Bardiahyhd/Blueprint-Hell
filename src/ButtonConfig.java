@@ -84,7 +84,7 @@ public class ButtonConfig {
         volumePanel.setOnMouseEntered(e-> volumePanel.setEffect(rectangleShadow));
         volumePanel.setOnMouseExited(e-> volumePanel.setEffect(null));
 
-        DropShadow shadow = new DropShadow();
+         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.WHITE);
         shadow.setRadius(10);
         shadow.setSpread(0.01);
@@ -116,6 +116,7 @@ public class ButtonConfig {
             double volumeCalc = (thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
+            Main.mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0 * 0.3);
 
             bar.setWidth(thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
@@ -128,6 +129,7 @@ public class ButtonConfig {
             double volumeCalc = (thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
+            Main.mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0 * 0.3);
 
             bar.setWidth(thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
