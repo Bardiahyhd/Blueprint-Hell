@@ -7,6 +7,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Main extends Application {
     public static void main(String[] args) {
         Application.launch(args);
@@ -21,7 +23,7 @@ public class Main extends Application {
     public void start(Stage PrimaryStage) throws Exception {
         Config.LoadConfig();
 
-        Media MenuSong = new Media(getClass().getResource("/Guitarmass-Infected_Mushroom.mp3").toExternalForm());
+        Media MenuSong = new Media(Objects.requireNonNull(getClass().getResource("/Guitarmass-Infected_Mushroom.mp3")).toExternalForm());
         mediaPlayer = new MediaPlayer(MenuSong);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.play();

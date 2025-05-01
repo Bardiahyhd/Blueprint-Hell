@@ -1,22 +1,19 @@
 <component name="libraryTable">
   <library name="javafx-sdk-24">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.base.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.controls.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.web.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.swing.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/jdk.jsobject.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.graphics.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.media.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/jfx.incubator.richtext.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx.fxml.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/jfx.incubator.input.jar!/" />
-      <root url="jar://$USER_HOME$/Downloadsos./javafx-sdk-24/lib/javafx-swt.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx-swt.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.base.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.controls.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.fxml.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.graphics.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.media.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.swing.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/javafx.web.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/jdk.jsobject.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/jfx.incubator.input.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/JAVAFX/lib/jfx.incubator.richtext.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$USER_HOME$/Downloadsos./javafx-sdk-24" />
-    </SOURCES>
-    <jarDirectory url="file://$USER_HOME$/Downloadsos./javafx-sdk-24" recursive="false" type="SOURCES" />
+    <SOURCES />
   </library>
 </component>
