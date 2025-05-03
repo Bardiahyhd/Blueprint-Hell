@@ -1,16 +1,23 @@
+package Graphics;
+
+import Config.Config;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import static java.lang.Double.parseDouble;
+
 public class ButtonConfig {
+
+    private static final double StageWidth = (double)(Config.Config.get("StageWidth"));
+    private static final double StageHeight = (double)(Config.Config.get("StageHeight"));
 
     private static double ButtonSizeX = 200;
     private static double ButtonSizeY = 90;
@@ -24,8 +31,8 @@ public class ButtonConfig {
         button.setPrefWidth(ButtonSizeX);
         button.setPrefHeight(ButtonSizeY);
 
-        button.setLayoutX(Main.StageWidth / 2 - ButtonSizeX / 2);
-        button.setLayoutY(Main.StageHeight / 2 + Pos * (ButtonSizeY * 1.1) + ButtonYMove);
+        button.setLayoutX(StageWidth / 2 - ButtonSizeX / 2);
+        button.setLayoutY(StageHeight / 2 + Pos * (ButtonSizeY * 1.1) + ButtonYMove);
 
         button.setTextFill(Color.web("#e0def4"));
         button.setStyle(
@@ -55,21 +62,21 @@ public class ButtonConfig {
 
     private static double thumbXPos;
 
-    public static void VolumeSlider(Group Node) {
-        Rectangle volumeTitle = new Rectangle(Main.StageWidth / 2 - volumeTitleSizeX / 2, Main.StageHeight / 2 - volumeTitleSizeY / 2 + volumeTitleMove, volumeTitleSizeX, volumeTitleSizeY);
+    public static void VolumeSlider(Group Node, MediaPlayer mediaPlayer) {
+        Rectangle volumeTitle = new Rectangle(StageWidth / 2 - volumeTitleSizeX / 2, StageHeight / 2 - volumeTitleSizeY / 2 + volumeTitleMove, volumeTitleSizeX, volumeTitleSizeY);
 
         Text volumeText = new Text("Volume " + ((int)((double) Config.Config.get("Volume"))));
         volumeText.setFont(Font.font("Comic Sans MS", 20));
         volumeText.setFill(Color.WHITE);
-        volumeText.setX(Main.StageWidth / 2 - volumeTitleSizeX / 2 + 45);
-        volumeText.setY(Main.StageHeight / 2 + volumeTitleMove + 6);
+        volumeText.setX(StageWidth / 2 - volumeTitleSizeX / 2 + 45);
+        volumeText.setY(StageHeight / 2 + volumeTitleMove + 6);
 
         volumeTitle.setFill(Color.web("#6e6a86"));
 
         volumeTitle.setArcWidth(60);
         volumeTitle.setArcHeight(60);
 
-        Rectangle volumePanel = new Rectangle(Main.StageWidth / 2 - volumePanelSizeX / 2, Main.StageHeight / 2 - volumePanelSizeY / 2 + volumePanelMove, volumePanelSizeX, volumePanelSizeY);
+        Rectangle volumePanel = new Rectangle(StageWidth / 2 - volumePanelSizeX / 2, StageHeight / 2 - volumePanelSizeY / 2 + volumePanelMove, volumePanelSizeX, volumePanelSizeY);
 
         volumePanel.setFill(Color.web("#6e6a86"));
 
@@ -89,10 +96,10 @@ public class ButtonConfig {
         shadow.setRadius(10);
         shadow.setSpread(0.01);
 
-        thumbXPos = Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 + (double) Config.Config.get("Volume") * (volumePanelSizeX - volumePanelSizeY) / 100;
-        Circle thumb = new Circle(thumbXPos, Main.StageHeight / 2 + volumePanelMove, volumePanelSizeY / 2 * 0.8);
+        thumbXPos = StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 + (double) Config.Config.get("Volume") * (volumePanelSizeX - volumePanelSizeY) / 100;
+        Circle thumb = new Circle(thumbXPos, StageHeight / 2 + volumePanelMove, volumePanelSizeY / 2 * 0.8);
 
-        Rectangle bar = new Rectangle(Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2, Main.StageHeight / 2 - volumePanelSizeY / 2 + volumePanelMove + volumePanelSizeY / 2 * 0.2, thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2, volumePanelSizeY - volumePanelSizeY / 2 * 0.4);
+        Rectangle bar = new Rectangle(StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2, StageHeight / 2 - volumePanelSizeY / 2 + volumePanelMove + volumePanelSizeY / 2 * 0.2, thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2, volumePanelSizeY - volumePanelSizeY / 2 * 0.4);
 
         bar.setFill(Color.web("#c4a7e7"));
 
@@ -111,14 +118,14 @@ public class ButtonConfig {
 
         thumb.setOnMouseDragged((MouseEvent event) -> {
             double newX = event.getSceneX() - thumbXPos;
-            newX = Math.max(Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2, Math.min(newX, Main.StageWidth / 2 + volumePanelSizeX / 2 - volumePanelSizeY / 2));
+            newX = Math.max(StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2, Math.min(newX, StageWidth / 2 + volumePanelSizeX / 2 - volumePanelSizeY / 2));
 
-            double volumeCalc = (thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
+            double volumeCalc = (thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
-            Main.mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0 * 0.3);
+            mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0);
 
-            bar.setWidth(thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
+            bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
             volumeText.setText("Volume " + ((int)((double) Config.Config.get("Volume"))));
 
@@ -126,12 +133,12 @@ public class ButtonConfig {
         });
 
         thumb.setOnMouseReleased(e -> {
-            double volumeCalc = (thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
+            double volumeCalc = (thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
-            Main.mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0 * 0.3);
+            mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0);
 
-            bar.setWidth(thumb.getCenterX() - (Main.StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
+            bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
             volumeText.setText("Volume " + ((int)((double) Config.Config.get("Volume"))));
         });

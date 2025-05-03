@@ -1,3 +1,5 @@
+package Config;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -8,9 +10,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Config {
+
     private static Gson gson = new Gson();
     public static Map<String, Object> Config = new HashMap();
 

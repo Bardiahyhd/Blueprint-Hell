@@ -1,23 +1,33 @@
+package Pages;
+
+import Config.Config;
+import Graphics.ButtonConfig;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.security.PrivilegedAction;
+
+import static java.lang.Double.parseDouble;
 
 public class Menu {
-    public static void MenuCreator(Stage PrimaryStage) {
+
+    private static final double StageWidth = parseDouble(Config.Config.get("StageWidth").toString());
+    private static final double StageHeight = parseDouble(Config.Config.get("StageHeight").toString());
+
+    public static void MenuCreator(Stage PrimaryStage, MediaPlayer mediaPlayer) {
         Group Nodes = new Group();
         Scene MenuScene = new Scene(Nodes);
 
         Image MenuBackground = new Image("File:MenuBackground.png");
         ImageView IV = new ImageView(MenuBackground);
-        IV.setFitWidth(Main.StageWidth);
-        IV.setFitHeight(Main.StageHeight);
+        IV.setFitWidth(StageWidth);
+        IV.setFitHeight(StageHeight);
         Group Background = new Group(IV);
         Nodes.getChildren().add(Background);
 
@@ -29,12 +39,15 @@ public class Menu {
         } else {
             play.setText("Continue");
         }
+        play.setOnAction( e -> {
+
+        });
 
         Button levels = ButtonConfig.Button("Levels", 0);
 
         Button settings = ButtonConfig.Button("Settings", +1);
         settings.setOnAction(e -> {
-            MenuSettings.MenuSettingsCreator(PrimaryStage);
+            MenuSettings.MenuSettingsCreator(PrimaryStage, mediaPlayer);
         });
 
         Button exit = ButtonConfig.Button("Exit", +2);
