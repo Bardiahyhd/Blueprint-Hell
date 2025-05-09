@@ -5,14 +5,16 @@ import javafx.animation.*;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
 public class Packet {
 
-    Polygon packet;
+    public Polygon packet;
+    public int noiseCapacity;
 
-    private static final double PacketSize = (double) Config.Config.get("PacketSize");
-    private static final double PacketSpeed = (double) Config.Config.get("PacketSpeed");
+    private static final double packetSize = (double) Config.Config.get("PacketSize");
+    private static final double packetSpeed = (double) Config.Config.get("PacketSpeed");
 
     private int PacketKind;
 
@@ -21,6 +23,37 @@ public class Packet {
     private ScaleTransition scaleTransition;
 
     private boolean onScaleTransition = true;
+
+    public Packet(Group group, int PacketKind, double startX, double startY) {
+        packet = new Polygon();
+        group.getChildren().add(packet);
+
+        this.PacketKind = PacketKind;
+
+        double smallRatio = 1.2;
+
+        // triangle
+        if (PacketKind == 1) {
+            packet.setFill(Color.web("#d61157"));
+            packet.getPoints().addAll(0.0, -0.577 * packetSize * smallRatio);
+            packet.getPoints().addAll(0.5 * packetSize * 0.9, 0.288 * packetSize * smallRatio);
+            packet.getPoints().addAll(-0.5 * packetSize * smallRatio, 0.288 * packetSize * smallRatio);
+            noiseCapacity = 3;
+        }
+
+        // rectangle
+        if (PacketKind == 2) {
+            packet.setFill(Color.web("#7cafb8"));
+            packet.getPoints().addAll(-0.5 * packetSize * smallRatio, -0.5 * packetSize * smallRatio);
+            packet.getPoints().addAll(0.5 * packetSize * smallRatio, -0.5 * packetSize * smallRatio);
+            packet.getPoints().addAll(0.5 * packetSize * smallRatio, 0.5 * packetSize * smallRatio);
+            packet.getPoints().addAll(-0.5 * packetSize * smallRatio, 0.5 * packetSize * smallRatio);
+            noiseCapacity = 2;
+        }
+
+        packet.setLayoutX(startX);
+        packet.setLayoutY(startY);
+    }
 
     public Packet(Group group, int PacketKind, double startX, double startY, double endX, double endY) {
         packet = new Polygon();
@@ -33,18 +66,20 @@ public class Packet {
         // triangle
         if (PacketKind == 1) {
             packet.setFill(Color.web("#f6c177"));
-            packet.getPoints().addAll(0.0, -0.577 * PacketSize);
-            packet.getPoints().addAll(0.5 * PacketSize, 0.288 * PacketSize);
-            packet.getPoints().addAll(-0.5 * PacketSize, 0.288 * PacketSize);
+            packet.getPoints().addAll(0.0, -0.577 * packetSize);
+            packet.getPoints().addAll(0.5 * packetSize, 0.288 * packetSize);
+            packet.getPoints().addAll(-0.5 * packetSize, 0.288 * packetSize);
+            noiseCapacity = 3;
         }
 
         // rectangle
         if (PacketKind == 2) {
             packet.setFill(Color.web("#9ccfd8"));
-            packet.getPoints().addAll(-0.5 * PacketSize, -0.5 * PacketSize);
-            packet.getPoints().addAll(0.5 * PacketSize, -0.5 * PacketSize);
-            packet.getPoints().addAll(0.5 * PacketSize, 0.5 * PacketSize);
-            packet.getPoints().addAll(-0.5 * PacketSize, 0.5 * PacketSize);
+            packet.getPoints().addAll(-0.5 * packetSize, -0.5 * packetSize);
+            packet.getPoints().addAll(0.5 * packetSize, -0.5 * packetSize);
+            packet.getPoints().addAll(0.5 * packetSize, 0.5 * packetSize);
+            packet.getPoints().addAll(-0.5 * packetSize, 0.5 * packetSize);
+            noiseCapacity = 2;
         }
 
         packet.setLayoutX(startX);
@@ -52,18 +87,18 @@ public class Packet {
 
         KeyValue keyX = new KeyValue(packet.layoutXProperty(), endX);
         KeyValue keyY = new KeyValue(packet.layoutYProperty(), endY);
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(dis/PacketSpeed), keyX, keyY);
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(dis/ packetSpeed), keyX, keyY);
 
         timeline = new Timeline(keyFrame);
         timeline.setCycleCount(1);
 
-        scaleTransition = new ScaleTransition(Duration.seconds(0.0015 * PacketSpeed), packet);
+        scaleTransition = new ScaleTransition(Duration.seconds(0.0015 * packetSpeed), packet);
         scaleTransition.setFromX(0.0);
         scaleTransition.setFromY(0.0);
         scaleTransition.setToX(1.0);
         scaleTransition.setToY(1.0);
 
-        fadeTransition = new FadeTransition(Duration.seconds(0.0015 * PacketSpeed), packet);
+        fadeTransition = new FadeTransition(Duration.seconds(0.0015 * packetSpeed), packet);
         fadeTransition.setFromValue(0.0);
         fadeTransition.setToValue(1.0);
 
@@ -105,5 +140,11 @@ public class Packet {
         } else {
             timeline.pause();
         }
+    }
+
+    public boolean doesTouch(Packet other) {
+        Shape intersection = Shape.intersect(packet, other.packet);
+        return intersection.getBoundsInLocal().getWidth() > 0 &&
+                intersection.getBoundsInLocal().getHeight() > 0;
     }
 }
