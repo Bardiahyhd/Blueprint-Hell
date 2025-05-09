@@ -1,6 +1,7 @@
 package Config;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.FileNotFoundException;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class Config {
 
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();;
     public static Map<String, Object> Config = new HashMap();
 
     public static void LoadConfig() throws IOException {
