@@ -20,6 +20,10 @@ public class WireDragger {
     Circle endbubble = new Circle();
     public boolean isThereALine = false;
 
+    public double lineLength() {
+        return Math.sqrt(Math.pow(currentLine.getEndX() - currentLine.getStartX(), 2) + Math.pow(currentLine.getEndY() - currentLine.getStartY(), 2));
+    }
+
     public WireDragger(Scene scene, Group group, Group pack, Packet packet) {
         currentLine.setStrokeWidth(2);
         currentLine.setStroke(Color.web("#f6c177"));
@@ -32,43 +36,44 @@ public class WireDragger {
         endbubble.setMouseTransparent(true);
 
         packet.packet.setOnMouseClicked(event -> {
-            if(!online) {
-                if (!isThereALine) {
-                    online = true;
-                    packet.onSystem.connectedOutput++;
-                    packet.onSystem.checkDraggable();
-                    startbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
-                    startbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
-                    endbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
-                    endbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
-                    currentLine.setStartX(packet.packet.getLayoutX() + pack.getTranslateX());
-                    currentLine.setStartY(packet.packet.getLayoutY() + pack.getTranslateY());
-                    currentLine.setEndX(packet.packet.getLayoutX() + pack.getTranslateX());
-                    currentLine.setEndY(packet.packet.getLayoutY() + pack.getTranslateY());
-                    group.getChildren().add(currentLine);
-                    group.getChildren().add(startbubble);
-                    group.getChildren().add(endbubble);
-                    isThereALine = true;
-                    isDrawing = true;
-                } else {
-                    online = false;
-                    packet.onSystem.connectedOutput--;
-                    packet.onSystem.checkDraggable();
-                    packet.onSystem.checkLight();
-                    if (otherSide != null) {
-                        otherSide.onSystem.connectedInput--;
-                        otherSide.onLine = false;
-                        otherSide.onSystem.checkDraggable();
-                        otherSide.onSystem.checkLight();
-                    }
-                    otherSide = null;
-                    group.getChildren().remove(currentLine);
-                    group.getChildren().remove(startbubble);
-                    group.getChildren().remove(endbubble);
-                    isThereALine = false;
-                    isDrawing = false;
+            if (!online && !isThereALine) {
+                online = true;
+                packet.onSystem.connectedOutput++;
+                packet.onSystem.checkDraggable();
+                startbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
+                startbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
+                endbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
+                endbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
+                currentLine.setStartX(packet.packet.getLayoutX() + pack.getTranslateX());
+                currentLine.setStartY(packet.packet.getLayoutY() + pack.getTranslateY());
+                currentLine.setEndX(packet.packet.getLayoutX() + pack.getTranslateX());
+                currentLine.setEndY(packet.packet.getLayoutY() + pack.getTranslateY());
+                group.getChildren().add(currentLine);
+                group.getChildren().add(startbubble);
+                group.getChildren().add(endbubble);
+                isThereALine = true;
+                isDrawing = true;
+            } else {
+                GameSystem.wireUsed -= lineLength();
+                Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
+                online = false;
+                packet.onSystem.connectedOutput--;
+                packet.onSystem.checkDraggable();
+                packet.onSystem.checkLight();
+                if (otherSide != null) {
+                    otherSide.onSystem.connectedInput--;
+                    otherSide.onLine = false;
+                    otherSide.onSystem.checkDraggable();
+                    otherSide.onSystem.checkLight();
                 }
+                otherSide = null;
+                group.getChildren().remove(currentLine);
+                group.getChildren().remove(startbubble);
+                group.getChildren().remove(endbubble);
+                isThereALine = false;
+                isDrawing = false;
             }
+
         });
 
         scene.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
@@ -109,7 +114,9 @@ public class WireDragger {
             if (isDrawing) {
                 if (packet.PacketKind == 1) {
                     for (Packet other : PacketSystem.triangleIn) {
-                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + GameSystem.wireUsed <= GameSystem.wireLimit) {
+                            GameSystem.wireUsed += lineLength();
+                            Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();
                             otherSide = other;
                             other.onSystem.connectedInput++;
@@ -123,12 +130,15 @@ public class WireDragger {
                             isThereALine = true;
                             isDrawing = false;
                             online = false;
+
                         }
                     }
                 }
                 if (packet.PacketKind == 2) {
                     for (Packet other : PacketSystem.rectIn) {
-                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + GameSystem.wireUsed <= GameSystem.wireLimit) {
+                            GameSystem.wireUsed += lineLength();
+                            Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();
                             otherSide = other;
                             other.onSystem.connectedInput++;

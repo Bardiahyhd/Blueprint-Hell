@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
@@ -56,6 +57,21 @@ public class PacketSystem {
     private ArrayList <Packet> inputPacket = new ArrayList<>();
     private ArrayList <Packet> outputPacket = new ArrayList<>();
 
+    private Polygon createStar(double centerX, double centerY, double outerRadius, double innerRadius, int numPoints) {
+        Polygon star = new Polygon();
+        double angleStep = Math.PI / numPoints;
+
+        for (int i = 0; i < 2 * numPoints; i++) {
+            double angle = i * angleStep;
+            double radius = (i % 2 == 0) ? outerRadius : innerRadius;
+            double x = centerX + radius * Math.cos(angle - Math.PI / 2);
+            double y = centerY + radius * Math.sin(angle - Math.PI / 2);
+            star.getPoints().addAll(x, y);
+        }
+
+        return star;
+    }
+
     public PacketSystem(Scene scene, Group group, Group wires, int input1, int input2, int output1, int output2, double X, double Y, boolean prime) {
         input = input1 + input2;
         output = output1 + output2;
@@ -89,7 +105,7 @@ public class PacketSystem {
         lighting.setLight(light);
         lighting.setSurfaceScale(1);
 
-        setDraggable(true);
+        // setDraggable(true);
 
         elements.getChildren().add(shape);
         elements.getChildren().add(lightShape);
@@ -120,9 +136,20 @@ public class PacketSystem {
             }
         }
 
+        if (prime) {
+            Polygon star = createStar(X, Y + 15, 20, 10, 5);
+            star.setFill(Color.GOLD);
+            star.setStroke(Color.BLACK);
+            elements.getChildren().add(star);
+        }
+
         elements.getChildren().add(in);
         elements.getChildren().add(out);
         group.getChildren().add(elements);
+    }
+
+    public void lunch(boolean inOrout, int x) {
+
     }
 
     public void checkLight() {
@@ -160,12 +187,12 @@ public class PacketSystem {
     }
 
     private void setDraggable(boolean bool) {
-        if (bool) {
+        /*if (bool) {
             elements.setOnMousePressed(e -> onMousePressed(e, elements));
             elements.setOnMouseDragged(e -> onMouseDragged(e, elements));
         } else {
             elements.setOnMousePressed(null);
             elements.setOnMouseDragged(null);
-        }
+        }*/
     }
 }

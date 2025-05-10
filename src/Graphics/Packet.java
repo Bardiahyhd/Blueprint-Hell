@@ -29,6 +29,9 @@ public class Packet {
     public boolean onLine = false;
     public PacketSystem onSystem;
 
+    public double pointX;
+    public double pointY;
+
     public Packet(Group group, int PacketKind, double startX, double startY, PacketSystem onSystem) {
         packet = new Polygon();
         group.getChildren().add(packet);

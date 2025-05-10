@@ -40,7 +40,7 @@ public class Menu {
             play.setText("Continue");
         }
         play.setOnAction( e -> {
-            Game.StartGame(PrimaryStage);
+            Game.StartGame(PrimaryStage, mediaPlayer);
         });
 
         Button levels = ButtonConfig.Button("Levels", 0);

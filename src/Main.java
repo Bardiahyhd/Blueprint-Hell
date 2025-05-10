@@ -14,7 +14,7 @@ public class Main extends Application {
         Application.launch(args);
     }
 
-    static MediaPlayer mediaPlayer;
+    public static MediaPlayer mediaPlayer;
 
     @Override
     public void start(Stage PrimaryStage) throws Exception {
