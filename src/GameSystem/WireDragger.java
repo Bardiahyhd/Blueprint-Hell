@@ -1,6 +1,8 @@
 package GameSystem;
 
 import Graphics.Packet;
+import Graphics.PacketSystem;
+import Pages.Game;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -10,6 +12,8 @@ import javafx.scene.shape.Line;
 
 public class WireDragger {
 
+    private static boolean online = false;
+    private Packet otherSide;
     private Line currentLine = new Line();
     private boolean isDrawing = false;
     Circle startbubble = new Circle();
@@ -28,31 +32,72 @@ public class WireDragger {
         endbubble.setMouseTransparent(true);
 
         packet.packet.setOnMouseClicked(event -> {
-            if (!isThereALine) {
-                startbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
-                startbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
-                endbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
-                endbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
-                currentLine.setStartX(packet.packet.getLayoutX() + pack.getTranslateX());
-                currentLine.setStartY(packet.packet.getLayoutY() + pack.getTranslateY());
-                currentLine.setEndX(packet.packet.getLayoutX() + pack.getTranslateX());
-                currentLine.setEndY(packet.packet.getLayoutY() + pack.getTranslateY());
-                group.getChildren().add(currentLine);
-                group.getChildren().add(startbubble);
-                group.getChildren().add(endbubble);
-                isThereALine = true;
-                isDrawing = true;
-            } else {
-                group.getChildren().remove(currentLine);
-                group.getChildren().remove(startbubble);
-                group.getChildren().remove(endbubble);
-                isThereALine = false;
-                isDrawing = false;
+            if(!online) {
+                if (!isThereALine) {
+                    online = true;
+                    packet.onSystem.connectedOutput++;
+                    packet.onSystem.checkDraggable();
+                    startbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
+                    startbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
+                    endbubble.setCenterX(packet.packet.getLayoutX() + pack.getTranslateX());
+                    endbubble.setCenterY(packet.packet.getLayoutY() + pack.getTranslateY());
+                    currentLine.setStartX(packet.packet.getLayoutX() + pack.getTranslateX());
+                    currentLine.setStartY(packet.packet.getLayoutY() + pack.getTranslateY());
+                    currentLine.setEndX(packet.packet.getLayoutX() + pack.getTranslateX());
+                    currentLine.setEndY(packet.packet.getLayoutY() + pack.getTranslateY());
+                    group.getChildren().add(currentLine);
+                    group.getChildren().add(startbubble);
+                    group.getChildren().add(endbubble);
+                    isThereALine = true;
+                    isDrawing = true;
+                } else {
+                    online = false;
+                    packet.onSystem.connectedOutput--;
+                    packet.onSystem.checkDraggable();
+                    packet.onSystem.checkLight();
+                    if (otherSide != null) {
+                        otherSide.onSystem.connectedInput--;
+                        otherSide.onLine = false;
+                        otherSide.onSystem.checkDraggable();
+                        otherSide.onSystem.checkLight();
+                    }
+                    otherSide = null;
+                    group.getChildren().remove(currentLine);
+                    group.getChildren().remove(startbubble);
+                    group.getChildren().remove(endbubble);
+                    isThereALine = false;
+                    isDrawing = false;
+                }
             }
         });
 
         scene.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
             if (isDrawing) {
+                boolean isValid = false;
+                if (packet.PacketKind == 1) {
+                    for (Packet other : PacketSystem.triangleIn) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                            isValid = true;
+                        }
+                    }
+                }
+                if (packet.PacketKind == 2) {
+                    for (Packet other : PacketSystem.rectIn) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                            isValid = true;
+                        }
+                    }
+                }
+
+                if (isValid) {
+                    currentLine.setStroke(Color.web("#a3ff61"));
+                    startbubble.setFill(Color.web("#a3ff61"));
+                    endbubble.setFill(Color.web("#a3ff61"));
+                } else {
+                    currentLine.setStroke(Color.web("#f6c177"));
+                    startbubble.setFill(Color.web("#f6c177"));
+                    endbubble.setFill(Color.web("#f6c177"));
+                }
                 currentLine.setEndX(event.getX());
                 currentLine.setEndY(event.getY());
                 endbubble.setCenterX(event.getX());
@@ -61,14 +106,47 @@ public class WireDragger {
         });
 
         scene.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (isDrawing && event.getTarget() != packet.packet) {
-                currentLine.setEndX(event.getX());
-                currentLine.setEndY(event.getY());
-                endbubble.setCenterX(event.getX());
-                endbubble.setCenterY(event.getY());
-                isThereALine = true;
-                isDrawing = false;
+            if (isDrawing) {
+                if (packet.PacketKind == 1) {
+                    for (Packet other : PacketSystem.triangleIn) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                            packet.onSystem.checkLight();
+                            otherSide = other;
+                            other.onSystem.connectedInput++;
+                            other.onSystem.checkDraggable();
+                            other.onLine = true;
+                            other.onSystem.checkLight();
+                            currentLine.setEndX(event.getX());
+                            currentLine.setEndY(event.getY());
+                            endbubble.setCenterX(event.getX());
+                            endbubble.setCenterY(event.getY());
+                            isThereALine = true;
+                            isDrawing = false;
+                            online = false;
+                        }
+                    }
+                }
+                if (packet.PacketKind == 2) {
+                    for (Packet other : PacketSystem.rectIn) {
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet) {
+                            packet.onSystem.checkLight();
+                            otherSide = other;
+                            other.onSystem.connectedInput++;
+                            other.onLine = true;
+                            other.onSystem.checkDraggable();
+                            other.onSystem.checkLight();
+                            currentLine.setEndX(event.getX());
+                            currentLine.setEndY(event.getY());
+                            endbubble.setCenterX(event.getX());
+                            endbubble.setCenterY(event.getY());
+                            isThereALine = true;
+                            isDrawing = false;
+                            online = false;
+                        }
+                    }
+                }
             }
+
         });
 
     }

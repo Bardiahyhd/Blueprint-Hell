@@ -2,6 +2,7 @@ package Graphics;
 
 import Config.Config;
 import GameSystem.WireDragger;
+import Pages.Game;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
@@ -21,13 +22,21 @@ import static GameSystem.MouseMovement.onMousePressed;
 
 public class PacketSystem {
 
-    public Group elements = new Group();
+    private Group in = new Group();
+    private Group out = new Group();
+    private Group elements = new Group();
 
-    // min : 1, max : 3
+    public static ArrayList<Packet> triangleIn = new ArrayList<>();
+    public static ArrayList<Packet> triangleOut = new ArrayList<>();
+    public static ArrayList<Packet> rectIn = new ArrayList<>();
+    public static ArrayList<Packet> rectOut = new ArrayList<>();
+
     private int input;
     private int output;
+    public int connectedInput = 0;
+    public int connectedOutput = 0;
 
-    private boolean systemLight = false;
+    public boolean systemLight = false;
     private Rectangle lightShape;
     private Rectangle shape;
 
@@ -47,7 +56,7 @@ public class PacketSystem {
     private ArrayList <Packet> inputPacket = new ArrayList<>();
     private ArrayList <Packet> outputPacket = new ArrayList<>();
 
-    public PacketSystem(Scene scene, Group group, Group wires, int input1, int input2, int output1, int output2, double X, double Y) {
+    public PacketSystem(Scene scene, Group group, Group wires, int input1, int input2, int output1, int output2, double X, double Y, boolean prime) {
         input = input1 + input2;
         output = output1 + output2;
 
@@ -87,30 +96,46 @@ public class PacketSystem {
 
         for (int i = 0; i < input; i++) {
             if (i < input1) {
-                Packet temp = new Packet(elements, 1, X - systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (input + 1));
+                Packet temp = new Packet(in, 1, X - systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (input + 1), this);
                 inputPacket.add(temp);
+                triangleIn.add(temp);
             } else {
-                Packet temp = new Packet(elements, 2, X - systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (input + 1));
+                Packet temp = new Packet(in, 2, X - systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (input + 1), this);
                 inputPacket.add(temp);
+                rectIn.add(temp);
             }
         }
 
-        group.getChildren().add(elements);
-
         for (int i = 0; i < output; i++) {
             if (i < output1) {
-                Packet temp = new Packet(elements, 1, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1));
+                Packet temp = new Packet(out, 1, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1), this);
                 WireDragger wireDragger = new WireDragger(scene, wires, elements, temp);
-                inputPacket.add(temp);
+                outputPacket.add(temp);
+                triangleOut.add(temp);
             } else {
-                Packet temp = new Packet(elements, 2, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1));
+                Packet temp = new Packet(out, 2, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1), this);
                 WireDragger wireDragger = new WireDragger(scene, wires, elements, temp);
-                inputPacket.add(temp);
+                outputPacket.add(temp);
+                rectOut.add(temp);
             }
+        }
+
+        elements.getChildren().add(in);
+        elements.getChildren().add(out);
+        group.getChildren().add(elements);
+    }
+
+    public void checkLight() {
+        if (input == connectedInput && output == connectedOutput) {
+            turnOnLight();
+        } else {
+            turnOffLight();
         }
     }
 
     private void turnOnLight() {
+        systemLight = true;
+        Game.isPlayable();
         lightShape.setEffect(null);
         lightShape.setEffect(lighting);
         lightShape.setEffect(shadow);
@@ -118,12 +143,23 @@ public class PacketSystem {
     }
 
     private void turnOffLight() {
+        systemLight = false;
+        Game.isPlayable();
         lightShape.setEffect(null);
         lightShape.setEffect(innerShadow);
         lightShape.setFill(offFill);
     }
 
-    public void setDraggable(boolean bool) {
+    public void checkDraggable() {
+        if (connectedInput == 0 && connectedOutput == 0) {
+            setDraggable(true);
+        }
+        else {
+            setDraggable(false);
+        }
+    }
+
+    private void setDraggable(boolean bool) {
         if (bool) {
             elements.setOnMousePressed(e -> onMousePressed(e, elements));
             elements.setOnMouseDragged(e -> onMouseDragged(e, elements));

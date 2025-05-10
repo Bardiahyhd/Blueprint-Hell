@@ -8,6 +8,8 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+
 public class Packet {
 
     public Polygon packet;
@@ -16,7 +18,7 @@ public class Packet {
     private static final double packetSize = (double) Config.Config.get("PacketSize");
     private static final double packetSpeed = (double) Config.Config.get("PacketSpeed");
 
-    private int PacketKind;
+    public int PacketKind;
 
     private Timeline timeline;
     private FadeTransition fadeTransition;
@@ -24,11 +26,16 @@ public class Packet {
 
     private boolean onScaleTransition = true;
 
-    public Packet(Group group, int PacketKind, double startX, double startY) {
+    public boolean onLine = false;
+    public PacketSystem onSystem;
+
+    public Packet(Group group, int PacketKind, double startX, double startY, PacketSystem onSystem) {
         packet = new Polygon();
         group.getChildren().add(packet);
 
         this.PacketKind = PacketKind;
+
+        this.onSystem = onSystem;
 
         double smallRatio = 1.2;
 
