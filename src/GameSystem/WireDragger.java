@@ -24,7 +24,7 @@ public class WireDragger {
         return Math.sqrt(Math.pow(currentLine.getEndX() - currentLine.getStartX(), 2) + Math.pow(currentLine.getEndY() - currentLine.getStartY(), 2));
     }
 
-    public WireDragger(Scene scene, Group group, Group pack, Packet packet) {
+    public WireDragger(Scene scene, Group group, Group main, Group pack, Packet packet, GameSystem gameSystem) {
         currentLine.setStrokeWidth(2);
         currentLine.setStroke(Color.web("#f6c177"));
         startbubble.setFill(Color.web("#f6c177"));
@@ -54,8 +54,8 @@ public class WireDragger {
                 isThereALine = true;
                 isDrawing = true;
             } else {
-                GameSystem.wireUsed -= lineLength();
-                Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
+                gameSystem.wireUsed -= lineLength();
+                Game.wireUsedBar.setWidth((gameSystem.wireLimit - gameSystem.wireUsed) / gameSystem.wireLimit * 392);
                 online = false;
                 packet.onSystem.connectedOutput--;
                 packet.onSystem.checkDraggable();
@@ -107,6 +107,8 @@ public class WireDragger {
                 currentLine.setEndY(event.getY());
                 endbubble.setCenterX(event.getX());
                 endbubble.setCenterY(event.getY());
+                Game.wireUsedBar.setWidth((Math.max(gameSystem.wireLimit - gameSystem.wireUsed - lineLength(), 0)) / gameSystem.wireLimit * 392);
+
             }
         });
 
@@ -114,15 +116,18 @@ public class WireDragger {
             if (isDrawing) {
                 if (packet.PacketKind == 1) {
                     for (Packet other : PacketSystem.triangleIn) {
-                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + GameSystem.wireUsed <= GameSystem.wireLimit) {
-                            GameSystem.wireUsed += lineLength();
-                            Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + gameSystem.wireUsed <= gameSystem.wireLimit) {
+                            gameSystem.wireUsed += lineLength();
+                            Game.wireUsedBar.setWidth((gameSystem.wireLimit - gameSystem.wireUsed) / gameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();
                             otherSide = other;
                             other.onSystem.connectedInput++;
                             other.onSystem.checkDraggable();
                             other.onLine = true;
                             other.onSystem.checkLight();
+                            currentLine.setStroke(Color.web("#e0def4"));
+                            startbubble.setFill(Color.web("#e0def4"));
+                            endbubble.setFill(Color.web("#e0def4"));
                             currentLine.setEndX(event.getX());
                             currentLine.setEndY(event.getY());
                             endbubble.setCenterX(event.getX());
@@ -130,21 +135,33 @@ public class WireDragger {
                             isThereALine = true;
                             isDrawing = false;
                             online = false;
-
+                            packet.otherSystem = other.onSystem;
+                            packet.endX = event.getX();
+                            packet.endY = event.getY();
+                            main.getChildren().add(currentLine);
+                            main.getChildren().add(startbubble);
+                            main.getChildren().add(endbubble);
+                            group.getChildren().remove(currentLine);
+                            group.getChildren().remove(startbubble);
+                            group.getChildren().remove(endbubble);
+                            // vasl shod! triangle
                         }
                     }
                 }
                 if (packet.PacketKind == 2) {
                     for (Packet other : PacketSystem.rectIn) {
-                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + GameSystem.wireUsed <= GameSystem.wireLimit) {
-                            GameSystem.wireUsed += lineLength();
-                            Game.wireUsedBar.setWidth((GameSystem.wireLimit - GameSystem.wireUsed) / GameSystem.wireLimit * 392);
+                        if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + gameSystem.wireUsed <= gameSystem.wireLimit) {
+                            gameSystem.wireUsed += lineLength();
+                            Game.wireUsedBar.setWidth((gameSystem.wireLimit - gameSystem.wireUsed) / gameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();
                             otherSide = other;
                             other.onSystem.connectedInput++;
                             other.onLine = true;
                             other.onSystem.checkDraggable();
                             other.onSystem.checkLight();
+                            currentLine.setStroke(Color.web("#e0def4"));
+                            startbubble.setFill(Color.web("#e0def4"));
+                            endbubble.setFill(Color.web("#e0def4"));
                             currentLine.setEndX(event.getX());
                             currentLine.setEndY(event.getY());
                             endbubble.setCenterX(event.getX());
@@ -152,12 +169,20 @@ public class WireDragger {
                             isThereALine = true;
                             isDrawing = false;
                             online = false;
+                            packet.otherSystem = other.onSystem;
+                            packet.endX = event.getX();
+                            packet.endY = event.getY();
+                            main.getChildren().add(currentLine);
+                            main.getChildren().add(startbubble);
+                            main.getChildren().add(endbubble);
+                            group.getChildren().remove(currentLine);
+                            group.getChildren().remove(startbubble);
+                            group.getChildren().remove(endbubble);
+                            // vasl shod rectangle
                         }
                     }
                 }
             }
-
         });
-
     }
 }

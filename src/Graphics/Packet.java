@@ -26,11 +26,15 @@ public class Packet {
 
     private boolean onScaleTransition = true;
 
+    public boolean packetonLine = false;
     public boolean onLine = false;
     public PacketSystem onSystem;
 
-    public double pointX;
-    public double pointY;
+    public double startX;
+    public double startY;
+    public double endX;
+    public double endY;
+    public PacketSystem otherSystem;
 
     public Packet(Group group, int PacketKind, double startX, double startY, PacketSystem onSystem) {
         packet = new Polygon();
@@ -41,6 +45,9 @@ public class Packet {
         this.onSystem = onSystem;
 
         double smallRatio = 1.2;
+
+        this.startX = startX;
+        this.startY = startY;
 
         // triangle
         if (PacketKind == 1) {
@@ -65,7 +72,7 @@ public class Packet {
         packet.setLayoutY(startY);
     }
 
-    public Packet(Group group, int PacketKind, double startX, double startY, double endX, double endY) {
+    public Packet(Group group, int PacketKind, double startX, double startY, double endX, double endY, Packet pointpacket) {
         packet = new Polygon();
         group.getChildren().add(packet);
 
@@ -113,9 +120,18 @@ public class Packet {
         fadeTransition.setToValue(1.0);
 
         scaleTransition.setOnFinished(e -> {
-            onScaleTransition = false;
+            if (scaleTransition.getFromX() == 1.0) {
+                group.getChildren().remove(packet);
+                PacketSystem.movingPackets.remove(this);
+                pointpacket.otherSystem.push_element(PacketKind);
+                pointpacket.packetonLine = false;
+                pointpacket.onSystem.lunch();
+            }
+            else {
+                timeline.play();
+            }
 
-            timeline.play();
+            onScaleTransition = false;
         });
 
         timeline.setOnFinished(e -> {

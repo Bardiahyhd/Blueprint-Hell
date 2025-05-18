@@ -1,9 +1,21 @@
 package GameSystem;
 
 public class GameSystem {
-    public static double wireLimit = 2200;
-    public static double wireUsed = 0;
-    public static int coins = 0;
+    public double wireLimit;
+    public double wireUsed = 0;
+    public int coins = 0;
+    public int packettri;
+    public int packetrect;
+    public int totalPackets;
+    public int packetsReceived = 0;
+    public int timelimit;
 
+    public GameSystem(double wireLimit, int packetrect, int packettri, int timelimit) {
+        this.wireLimit = wireLimit;
+        this.packetrect = packetrect;
+        this.packettri = packettri;
+        totalPackets = packetrect + packettri;
+        this.timelimit = timelimit;
+    }
 
 }
