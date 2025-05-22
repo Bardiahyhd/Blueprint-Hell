@@ -9,6 +9,7 @@ public class GameSystem {
     public int totalPackets;
     public int packetsReceived = 0;
     public int timelimit;
+    public int destroyedpackets = 0;
 
     public GameSystem(double wireLimit, int packetrect, int packettri, int timelimit) {
         this.wireLimit = wireLimit;

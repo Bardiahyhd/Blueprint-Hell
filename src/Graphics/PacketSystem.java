@@ -63,9 +63,10 @@ public class PacketSystem {
     );
 
     private ArrayList<Packet> inputPacketTriangle = new ArrayList<>();
-    private ArrayList<Packet> outputPacketTriangle = new ArrayList<>();
+    public ArrayList<Packet> outputPacketTriangle = new ArrayList<>();
     private ArrayList<Packet> inputPacketRect = new ArrayList<>();
-    private ArrayList<Packet> outputPacketRect = new ArrayList<>();
+    public ArrayList<Packet> outputPacketRect = new ArrayList<>();
+    public ArrayList<WireDragger> wiredraggers = new ArrayList<>();
 
     private Polygon createStar(double centerX, double centerY, double outerRadius, double innerRadius, int numPoints) {
         Polygon star = new Polygon();
@@ -156,11 +157,13 @@ public class PacketSystem {
             if (i < output1) {
                 Packet temp = new Packet(out, 1, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1), this);
                 WireDragger wireDragger = new WireDragger(scene, wires, finalWires, elements, temp, gameSystem);
+                wiredraggers.add(wireDragger);
                 outputPacketTriangle.add(temp);
                 triangleOut.add(temp);
             } else {
                 Packet temp = new Packet(out, 2, X + systemWidthSize / 2, Y - systemHeightSize / 2 + (i + 1) * systemHeightSize / (output + 1), this);
                 WireDragger wireDragger = new WireDragger(scene, wires, finalWires, elements, temp, gameSystem);
+                wiredraggers.add(wireDragger);
                 outputPacketRect.add(temp);
                 rectOut.add(temp);
             }
@@ -281,11 +284,14 @@ public class PacketSystem {
 
     public void push_element(int packetKind) {
         if (!prime) {
-            packetstored.add(packetKind);
-            text.setText(Integer.toString(packetstored.size()));
-            lunch();
-        }
-        else {
+            if (packetstored.size() + 1 <= packetstoredlimit) {
+                packetstored.add(packetKind);
+                text.setText(Integer.toString(packetstored.size()));
+                lunch();
+            } else {
+                gm.destroyedpackets++;
+            }
+        } else {
             gm.packetsReceived++;
         }
         if (packetKind == 1) {
@@ -293,7 +299,8 @@ public class PacketSystem {
         } else if (packetKind == 2) {
             gm.coins++;
         }
-        Game.packets.setText("Packets : "+gm.packetsReceived+"/"+gm.totalPackets);
+        Game.lostpackets.setText("Destroyed Packets : " + gm.destroyedpackets + "/" + gm.totalPackets);
+        Game.packets.setText("Packets : " + gm.packetsReceived + "/" + gm.totalPackets);
         Game.coins.setText("Coins :" + gm.coins);
     }
 }

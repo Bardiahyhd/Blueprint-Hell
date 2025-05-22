@@ -41,7 +41,6 @@ public class Packet {
         group.getChildren().add(packet);
 
         this.PacketKind = PacketKind;
-
         this.onSystem = onSystem;
 
         double smallRatio = 1.2;
@@ -72,10 +71,15 @@ public class Packet {
         packet.setLayoutY(startY);
     }
 
+    private Group group;
+    private Packet pointpacket;
+
     public Packet(Group group, int PacketKind, double startX, double startY, double endX, double endY, Packet pointpacket) {
         packet = new Polygon();
         group.getChildren().add(packet);
 
+        this.group = group;
+        this.pointpacket = pointpacket;
         this.PacketKind = PacketKind;
 
         double dis = Math.sqrt(Math.pow((endX - startX), 2) + Math.pow((endY - startY), 2));
@@ -168,9 +172,34 @@ public class Packet {
         }
     }
 
-    public boolean doesTouch(Packet other) {
+    public void delete() {
+        pause();
+        group.getChildren().remove(packet);
+        PacketSystem.movingPackets.remove(this);
+        pointpacket.packetonLine = false;
+        pointpacket.onSystem.lunch();
+    }
+
+    private double touchmove = 1;
+    public double Xtranslate;
+    public double Ytranslate;
+
+    public void touched(Double X, Double Y) {
+        if (noiseCapacity == 0) {
+            delete();
+        } else {
+            packet.setTranslateX(touchmove * (packet.getLayoutX() + packet.getTranslateX() - X));
+            packet.setTranslateY(touchmove * (packet.getLayoutY() + packet.getTranslateY() - Y));
+            noiseCapacity--;
+        }
+    }
+
+    public void doesTouch(Packet other) {
         Shape intersection = Shape.intersect(packet, other.packet);
-        return intersection.getBoundsInLocal().getWidth() > 0 &&
-                intersection.getBoundsInLocal().getHeight() > 0;
+
+        if (intersection.getBoundsInLocal().getWidth() > 0 && intersection.getBoundsInLocal().getHeight() > 0) {
+            touched(intersection.getBoundsInLocal().getCenterX(), intersection.getBoundsInLocal().getCenterY());
+            other.touched(intersection.getBoundsInLocal().getCenterX(), intersection.getBoundsInLocal().getCenterY());
+        }
     }
 }

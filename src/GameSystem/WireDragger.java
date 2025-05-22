@@ -108,7 +108,6 @@ public class WireDragger {
                 endbubble.setCenterX(event.getX());
                 endbubble.setCenterY(event.getY());
                 Game.wireUsedBar.setWidth((Math.max(gameSystem.wireLimit - gameSystem.wireUsed - lineLength(), 0)) / gameSystem.wireLimit * 392);
-
             }
         });
 
