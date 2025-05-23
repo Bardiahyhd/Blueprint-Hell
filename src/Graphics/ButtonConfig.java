@@ -1,6 +1,7 @@
 package Graphics;
 
 import Config.Config;
+import Pages.Game;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
@@ -61,6 +62,142 @@ public class ButtonConfig {
     private static double volumePanelMove = 64;
 
     private static double thumbXPos;
+
+    private static double temporalTitleSizeX = 220;
+    private static double temporalTitleSizeY = 60;
+    private static double temporalTitleMove = 64;
+
+    private static double temporalPanelSizeX = 450;
+    private static double temporalPanelSizeY = 60;
+    private static double temporalPanelMove = 64;
+    private static double temporalXmove = -195;
+    private static double temporalYmove = 250;
+
+    private static double thumbXPos2;
+
+    public static double temporalNum = 0;
+
+    public static Button show;
+
+    public static void temporal(Group Node) {
+        temporalNum = 0;
+
+        Rectangle temporalPanel = new Rectangle(StageWidth / 2 - temporalPanelSizeX / 2 + temporalXmove, StageHeight / 2 - temporalPanelSizeY / 2 + temporalPanelMove + temporalYmove, temporalPanelSizeX, temporalPanelSizeY);
+
+        Rectangle temporalTitle = new Rectangle(-20 + StageWidth / 2 + temporalXmove + temporalPanelSizeX / 2 + temporalPanelSizeY / 2, StageHeight / 2 - temporalTitleSizeY / 2 + temporalTitleMove + temporalYmove, temporalTitleSizeX, temporalTitleSizeY);
+
+        Text temporalText = new Text("Time Temporal 0s");
+        temporalText.setFont(Font.font("Comic Sans MS", 20));
+        temporalText.setFill(Color.WHITE);
+        temporalText.setX(-20 + StageWidth / 2  + 20 + temporalXmove + temporalPanelSizeX / 2 + temporalPanelSizeY / 2);
+        temporalText.setY(StageHeight / 2 + temporalTitleMove + 6 + temporalYmove);
+
+        temporalTitle.setFill(Color.web("#6e6a86"));
+
+        temporalTitle.setArcWidth(60);
+        temporalTitle.setArcHeight(60);
+
+        temporalPanel.setFill(Color.web("#6e6a86"));
+
+        temporalPanel.setArcWidth(60);
+        temporalPanel.setArcHeight(60);
+
+        DropShadow rectangleShadow = new DropShadow();
+        rectangleShadow.setColor(Color.WHITE);
+        rectangleShadow.setRadius(10);
+        rectangleShadow.setSpread(0.005);
+
+        temporalPanel.setOnMouseEntered(e -> temporalPanel.setEffect(rectangleShadow));
+        temporalPanel.setOnMouseExited(e -> temporalPanel.setEffect(null));
+
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.WHITE);
+        shadow.setRadius(10);
+        shadow.setSpread(0.01);
+
+        thumbXPos2 = StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 + (double) Config.Config.get("Volume") * (temporalPanelSizeX - temporalPanelSizeY) / 100;
+        Circle thumb = new Circle(thumbXPos2 + temporalXmove, StageHeight / 2 + temporalPanelMove + temporalYmove, temporalPanelSizeY / 2 * 0.8);
+
+        Rectangle bar = new Rectangle(StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 * 0.2 + temporalXmove, StageHeight / 2 - temporalPanelSizeY / 2 + temporalPanelMove + temporalPanelSizeY / 2 * 0.2 + temporalYmove, thumb.getCenterX() - (StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 * 0.2) + temporalPanelSizeY * 0.8 / 2, temporalPanelSizeY - temporalPanelSizeY / 2 * 0.4);
+
+        bar.setFill(Color.web("#6be612"));
+
+        bar.setArcWidth(50);
+        bar.setArcHeight(50);
+
+        thumb.setFill(Color.web("#d4c8e3"));
+        thumb.setEffect(shadow);
+
+        thumb.setOnMouseEntered(e -> shadow.setSpread(0.3));
+        thumb.setOnMouseExited(e -> shadow.setSpread(0.01));
+
+        thumb.setOnMousePressed((MouseEvent event) -> {
+            if (!Game.ontemporal) {
+                thumbXPos2 = event.getSceneX() - thumb.getCenterX();
+            }
+        });
+
+        thumb.setOnMouseDragged((MouseEvent event) -> {
+            if (!Game.ontemporal) {
+                double newX = event.getSceneX() - thumbXPos2;
+                newX = Math.max(StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 + temporalXmove, Math.min(newX, StageWidth / 2 + temporalPanelSizeX / 2 - temporalPanelSizeY / 2 + temporalXmove));
+
+                double temporalCalc = (thumb.getCenterX() - (StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2)) / (temporalPanelSizeX - temporalPanelSizeY) * 100;
+
+                temporalNum = ((int) ((temporalCalc + 50) / 100 * Game.level.timelimit));
+                temporalText.setText("Time Temporal " + ((int) ((temporalCalc + 50) / 100 * Game.level.timelimit)) + "s");
+
+                bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 * 0.2) + temporalPanelSizeY * 0.8 / 2 - temporalXmove);
+
+                thumb.setCenterX(newX);
+            }
+        });
+
+        thumb.setOnMouseReleased(e -> {
+            if (!Game.ontemporal) {
+                double temporalCalc = (thumb.getCenterX() - (StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2)) / (temporalPanelSizeX - temporalPanelSizeY) * 100;
+
+                temporalNum = ((int) ((temporalCalc + 50) / 100 * Game.level.timelimit));
+                temporalText.setText("Time Temporal " + ((int) ((temporalCalc + 50) / 100 * Game.level.timelimit)) + "s");
+
+                bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - temporalPanelSizeX / 2 + temporalPanelSizeY / 2 * 0.2) + temporalPanelSizeY * 0.8 / 2 - temporalXmove);
+            }
+        });
+
+        thumb.setOnMouseEntered(e -> temporalPanel.setEffect(rectangleShadow));
+        thumb.setOnMouseExited(e -> temporalPanel.setEffect(null));
+
+        bar.setOnMouseEntered(e -> temporalPanel.setEffect(rectangleShadow));
+        bar.setOnMouseExited(e -> temporalPanel.setEffect(null));
+
+        Node.getChildren().add(temporalTitle);
+        Node.getChildren().add(temporalText);
+        Node.getChildren().add(temporalPanel);
+        Node.getChildren().add(bar);
+        Node.getChildren().add(thumb);
+
+        show = new Button("Show");
+
+        show.setFont(Font.font("Comic Sans MS", 20));
+
+        show.setPrefWidth(temporalTitleSizeX * 0.7);
+        show.setPrefHeight(temporalTitleSizeY);
+
+        show.setTextFill(Color.web("#e0def4"));
+        show.setStyle(
+                "-fx-background-color: #6e6a86;" +
+                        "-fx-padding: 10 20;" +
+                        "-fx-background-radius: 30;"
+        );
+
+        show.setOnMouseEntered(e -> show.setEffect(shadow));
+        show.setOnMouseExited(e -> show.setEffect(null));
+
+        show.setLayoutX(85 + StageWidth / 2 + temporalXmove - temporalPanelSizeX / 2 - temporalPanelSizeY / 2 - temporalTitleSizeX);
+        show.setLayoutY(StageHeight / 2 - temporalTitleSizeY / 2 + temporalTitleMove + temporalYmove);
+
+        Node.getChildren().add(show);
+    }
 
     public static void VolumeSlider(Group Node, MediaPlayer mediaPlayer) {
         Rectangle volumeTitle = new Rectangle(StageWidth / 2 - volumeTitleSizeX / 2, StageHeight / 2 - volumeTitleSizeY / 2 + volumeTitleMove, volumeTitleSizeX, volumeTitleSizeY);

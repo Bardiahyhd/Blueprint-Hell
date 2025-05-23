@@ -213,6 +213,9 @@ public class Packet {
     private double impactradius = 30;
 
     public void touched(Double X, Double Y) {
+        if (Game.ontemporal) {
+            return;
+        }
         for (Packet ps : PacketSystem.movingPackets) {
             if (Math.sqrt(Math.pow((ps.packet.getLayoutX() + ps.packet.getTranslateX() - X), 2) + Math.pow((ps.packet.getLayoutY() + ps.packet.getTranslateY() - Y), 2)) <= impactradius) {
                 if (noiseCapacity <= 1) {

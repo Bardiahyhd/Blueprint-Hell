@@ -54,6 +54,10 @@ public class Game {
     private static final double StageWidth = parseDouble(Config.Config.get("StageWidth").toString());
     private static final double StageHeight = parseDouble(Config.Config.get("StageHeight").toString());
 
+    public static Text temporal;
+    public static Rectangle temporalBar;
+    public static Rectangle temporalUsedBar = new Rectangle(224, StageHeight - 100 + 4, 392, 32);
+
     private static ArrayList<PacketSystem> systemsArray = new ArrayList<>();
 
     public static Button play = new Button();
@@ -62,17 +66,19 @@ public class Game {
         for (PacketSystem ps : systemsArray) {
             if (!ps.systemLight) {
                 play.setStyle("-fx-background-color: #191724;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
+                ButtonConfig.show.setStyle("-fx-background-color: #191724;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
                 return false;
             }
         }
         play.setStyle("-fx-background-color: #409106;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
+        ButtonConfig.show.setStyle("-fx-background-color: #409106;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
         return true;
     }
 
     private static int cnt = 0;
     public static GameSystem level;
-    public boolean runninggame = false;
 
+    public static boolean ontemporal = false;
     public static boolean live = false;
 
     public static void StartGame(Stage PrimaryStage, MediaPlayer mediaPlayer, int lvl) {
@@ -92,6 +98,8 @@ public class Game {
         }
 
         nodes.setCache(false);
+
+        ButtonConfig.temporal(HUD);
 
         wire = new Text();
         wire.setText("Wire");
@@ -186,7 +194,7 @@ public class Game {
         PacketSystem p2;
 
         if (lvl == 1) {
-            p1 = new PacketSystem(Game, systems, wires, finalWires, 0, 1, 1, 2, StageWidth / 2 - 400, StageHeight / 2 + 200, true, level);
+            p1 = new PacketSystem(Game, systems, wires, finalWires, 0, 1, 1, 2, StageWidth / 2 - 400, StageHeight / 2 + 100, true, level);
         } else if (lvl == 2) {
             p1 = new PacketSystem(Game, systems, wires, finalWires, 0, 0, 1, 2, StageWidth / 2 - 500, StageHeight / 2, true, level);
             p2 = new PacketSystem(Game, systems, wires, finalWires, 3, 1, 0, 0, StageWidth / 2 + 450, StageHeight / 2 , true, level);
@@ -196,7 +204,6 @@ public class Game {
             p1 = null;
         }
         systemsArray.add(p1);
-
 
         if (lvl == 1) {
             PacketSystem s1 = new PacketSystem(Game, systems, wires, finalWires, 2, 1, 0, 1, StageWidth / 2 + 300, StageHeight / 2, false, level);
@@ -217,8 +224,6 @@ public class Game {
             systemsArray.add(s4);
             systemsArray.add(s5);
         }
-
-        Group random = new Group();
         Pane random2 = new Pane();
 
         Packet xp = new Packet(random2, 1, 0, 0, 0, 0, p1.outputPacketRect.get(0));
@@ -294,7 +299,7 @@ public class Game {
         Group end = new Group(gameover, playagain, backtomenu);
 
         Timeline gamechecktimeline = new Timeline(new KeyFrame(Duration.millis(1), event -> {
-            if (level.destroyedpackets + level.packetsReceived == level.totalPackets) {
+            if (level.destroyedpackets + level.packetsReceived == level.totalPackets && !ontemporal) {
                 // game over won
                 GaussianBlur gaussianBlur = new GaussianBlur();
                 gaussianBlur.setRadius(10.5);
@@ -365,7 +370,7 @@ public class Game {
                 }
                 nodes.getChildren().add(end);
             }
-            if (level.destroyedpackets > level.totalPackets / 2) {
+            if (level.destroyedpackets > level.totalPackets / 2 && !ontemporal) {
                 // lose
                 GaussianBlur gaussianBlur = new GaussianBlur();
                 gaussianBlur.setRadius(10.5);
@@ -378,6 +383,16 @@ public class Game {
                 }
                 timer.pause();
                 nodes.getChildren().add(end);
+            }
+
+            if (ontemporal && live) {
+                if (((int)(Math.ceil((((double) cnt / 1000))))) >= Math.min(ButtonConfig.temporalNum, level.timelimit - 2)) {
+                    timeline.pause();
+                    for (Packet packet : PacketSystem.movingPackets) {
+                        packet.pause();
+                    }
+                    timer.pause();
+                }
             }
         }));
         gamechecktimeline.stop();
@@ -402,8 +417,47 @@ public class Game {
 
         timeline.setCycleCount(Timeline.INDEFINITE);
 
+
+        ButtonConfig.show.setOnAction( e -> {
+            if(isPlayable()) {
+                if (ButtonConfig.show.getText().equalsIgnoreCase("show")) {
+                    ontemporal = true;
+                    ButtonConfig.show.setText("Cancel");
+                    live = true;
+                    timeline.playFromStart();
+                    timer.playFromStart();
+                    gamechecktimeline.playFromStart();
+                } else {
+                    ontemporal = false;
+                    live = false;
+                    PacketSystem.packs.getChildren().clear();
+                    ButtonConfig.show.setText("Show");
+                    resetStatus(lvl);
+                    timeline.stop();
+                    timer.stop();
+                    gamechecktimeline.stop();
+                    for (Packet packet : PacketSystem.movingPackets) {
+                        packet.stop();
+                    }
+                    PacketSystem.movingPackets.clear();
+                    PacketSystem.packs.getChildren().clear();
+                    for (PacketSystem ps : systemsArray) {
+                        for (Packet pc : ps.outputPacketTriangle) {
+                            pc.packetonLine = false;
+                        }
+                        for (Packet pc : ps.outputPacketRect) {
+                            pc.packetonLine = false;
+                        }
+                        ps.packetstored.clear();
+                        ps.text.setText(Integer.toString(0));
+                    }
+                    cnt = 0;
+                }
+            }
+        });
+
         play.setOnAction(e -> {
-            if (isPlayable()) {
+            if (isPlayable() && !ontemporal) {
                 if (play.getText().equalsIgnoreCase("Play")) {
                     play.setText("Reset");
                     live = true;
