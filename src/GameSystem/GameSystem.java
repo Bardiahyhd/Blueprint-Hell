@@ -1,5 +1,7 @@
 package GameSystem;
 
+import Pages.Game;
+
 public class GameSystem {
     public double wireLimit;
     public double wireUsed = 0;
@@ -10,6 +12,11 @@ public class GameSystem {
     public int packetsReceived = 0;
     public int timelimit;
     public int destroyedpackets = 0;
+
+    public void adddes() {
+        destroyedpackets++;
+        Game.lostpackets.setText("Destroyed Packets : " + destroyedpackets + "/" + totalPackets);
+    }
 
     public GameSystem(double wireLimit, int packetrect, int packettri, int timelimit) {
         this.wireLimit = wireLimit;

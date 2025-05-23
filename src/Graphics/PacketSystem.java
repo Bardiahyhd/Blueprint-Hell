@@ -10,6 +10,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -28,7 +29,7 @@ public class PacketSystem {
     private boolean prime = false;
     public Text text = new Text();
 
-    public static Group packs = new Group();
+    public static Pane packs = new Pane();
 
     private Group in = new Group();
     private Group out = new Group();
@@ -85,12 +86,12 @@ public class PacketSystem {
 
     GameSystem gm;
 
-    public PacketSystem(Scene scene, Group group, Group wires, Group finalWires, int input1, int input2, int output1, int output2, double X, double Y, boolean prime, GameSystem gameSystem) {
+    public PacketSystem(Scene scene, Pane group, Group wires, Group finalWires, int input1, int input2, int output1, int output2, double X, double Y, boolean prime, GameSystem gameSystem) {
         input = input1 + input2;
         output = output1 + output2;
 
         this.prime = prime;
-        this.gm = gameSystem;
+        gm = gameSystem;
 
         innerShadow.setRadius(5);
         innerShadow.setOffsetX(2);
@@ -181,54 +182,78 @@ public class PacketSystem {
         group.getChildren().add(elements);
     }
 
-    public Queue<Integer> packetstored = new LinkedList<>();
+    public Queue<Packet> packetstored = new LinkedList<>();
     private int packetstoredlimit = 5;
 
     public void lunch() {
         if (!packetstored.isEmpty()) {
-            if (packetstored.peek() == 1) {
+            if (packetstored.peek().PacketKind == 1) {
                 for (Packet node : outputPacketTriangle) {
                     if (!node.packetonLine) {
-                        packetstored.poll();
-                        text.setText(Integer.toString(packetstored.size()));
                         node.packetonLine = true;
                         Packet x = new Packet(packs, 1, node.startX, node.startY, node.endX, node.endY, node);
                         movingPackets.add(x);
+                        x.noiseCapacity = packetstored.peek().noiseCapacity;
+                        x.ColorRefresh();
+                        x.Xtranslate = packetstored.peek().Xtranslate;
+                        x.Ytranslate = packetstored.peek().Ytranslate;
+                        x.packet.setTranslateX(x.Xtranslate);
+                        x.packet.setTranslateY(x.Ytranslate);
+                        packetstored.poll();
+                        text.setText(Integer.toString(packetstored.size()));
                         x.play();
                         return;
                     }
                 }
                 for (Packet node : outputPacketRect) {
                     if (!node.packetonLine) {
-                        packetstored.poll();
-                        text.setText(Integer.toString(packetstored.size()));
                         node.packetonLine = true;
                         Packet x = new Packet(packs, 1, node.startX, node.startY, node.endX, node.endY, node);
                         movingPackets.add(x);
+                        x.noiseCapacity = packetstored.peek().noiseCapacity;
+                        x.ColorRefresh();
+                        x.Xtranslate = packetstored.peek().Xtranslate;
+                        x.Ytranslate = packetstored.peek().Ytranslate;
+                        x.packet.setTranslateX(x.Xtranslate);
+                        x.packet.setTranslateY(x.Ytranslate);
+                        packetstored.poll();
+                        text.setText(Integer.toString(packetstored.size()));
                         x.play();
                         return;
                     }
                 }
             }
-            if (packetstored.peek() == 2) {
+            if (packetstored.peek().PacketKind == 2) {
                 for (Packet node : outputPacketRect) {
                     if (!node.packetonLine) {
-                        packetstored.poll();
-                        text.setText(Integer.toString(packetstored.size()));
                         node.packetonLine = true;
                         Packet x = new Packet(packs, 2, node.startX, node.startY, node.endX, node.endY, node);
                         movingPackets.add(x);
+                        x.noiseCapacity = packetstored.peek().noiseCapacity;
+                        x.ColorRefresh();
+                        x.Xtranslate = packetstored.peek().Xtranslate;
+                        x.Ytranslate = packetstored.peek().Ytranslate;
+                        x.packet.setTranslateX(x.Xtranslate);
+                        x.packet.setTranslateY(x.Ytranslate);
+                        packetstored.poll();
+                        text.setText(Integer.toString(packetstored.size()));
                         x.play();
                         return;
                     }
                 }
                 for (Packet node : outputPacketTriangle) {
                     if (!node.packetonLine) {
-                        packetstored.poll();
-                        text.setText(Integer.toString(packetstored.size()));
                         node.packetonLine = true;
                         Packet x = new Packet(packs, 2, node.startX, node.startY, node.endX, node.endY, node);
                         movingPackets.add(x);
+                        x.noiseCapacity = packetstored.peek().noiseCapacity;
+                        x.ColorRefresh();
+                        x.Xtranslate = packetstored.peek().Xtranslate;
+                        x.Ytranslate = packetstored.peek().Ytranslate;
+                        x.packet.setTranslateX(x.Xtranslate);
+                        x.packet.setTranslateY(x.Ytranslate);
+                        packetstored.poll();
+                        text.setText(Integer.toString(packetstored.size()));
                         x.play();
                         return;
                     }
@@ -282,10 +307,10 @@ public class PacketSystem {
         */
     }
 
-    public void push_element(int packetKind) {
+    public void push_element(Packet ps) {
         if (!prime) {
             if (packetstored.size() + 1 <= packetstoredlimit) {
-                packetstored.add(packetKind);
+                packetstored.add(ps);
                 text.setText(Integer.toString(packetstored.size()));
                 lunch();
             } else {
@@ -294,9 +319,9 @@ public class PacketSystem {
         } else {
             gm.packetsReceived++;
         }
-        if (packetKind == 1) {
+        if (ps.PacketKind == 1) {
             gm.coins += 2;
-        } else if (packetKind == 2) {
+        } else if (ps.PacketKind == 2) {
             gm.coins++;
         }
         Game.lostpackets.setText("Destroyed Packets : " + gm.destroyedpackets + "/" + gm.totalPackets);

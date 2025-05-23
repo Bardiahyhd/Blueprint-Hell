@@ -44,6 +44,9 @@ public class Menu {
         });
 
         Button levels = ButtonConfig.Button("Levels", 0);
+        levels.setOnAction(e -> {
+            LevelPage.LevelPageCreator(PrimaryStage, mediaPlayer);
+        });
 
         Button settings = ButtonConfig.Button("Settings", +1);
         settings.setOnAction(e -> {

@@ -16,10 +16,10 @@ import static java.lang.Double.parseDouble;
 
 public class ButtonConfig {
 
-    private static final double StageWidth = (double)(Config.Config.get("StageWidth"));
-    private static final double StageHeight = (double)(Config.Config.get("StageHeight"));
+    private static final double StageWidth = (double) (Config.Config.get("StageWidth"));
+    private static final double StageHeight = (double) (Config.Config.get("StageHeight"));
 
-    private static double ButtonSizeX = 200;
+    private static double ButtonSizeX = 300;
     private static double ButtonSizeY = 90;
     private static double ButtonYMove = 20;
 
@@ -37,7 +37,7 @@ public class ButtonConfig {
         button.setTextFill(Color.web("#e0def4"));
         button.setStyle(
                 "-fx-background-color: #6e6a86;" +
-                "-fx-padding: 10 20;" +
+                        "-fx-padding: 10 20;" +
                         "-fx-background-radius: 30;"
         );
 
@@ -65,7 +65,7 @@ public class ButtonConfig {
     public static void VolumeSlider(Group Node, MediaPlayer mediaPlayer) {
         Rectangle volumeTitle = new Rectangle(StageWidth / 2 - volumeTitleSizeX / 2, StageHeight / 2 - volumeTitleSizeY / 2 + volumeTitleMove, volumeTitleSizeX, volumeTitleSizeY);
 
-        Text volumeText = new Text("Volume " + ((int)((double) Config.Config.get("Volume"))));
+        Text volumeText = new Text("Volume " + ((int) ((double) Config.Config.get("Volume"))));
         volumeText.setFont(Font.font("Comic Sans MS", 20));
         volumeText.setFill(Color.WHITE);
         volumeText.setX(StageWidth / 2 - volumeTitleSizeX / 2 + 45);
@@ -88,10 +88,10 @@ public class ButtonConfig {
         rectangleShadow.setRadius(10);
         rectangleShadow.setSpread(0.005);
 
-        volumePanel.setOnMouseEntered(e-> volumePanel.setEffect(rectangleShadow));
-        volumePanel.setOnMouseExited(e-> volumePanel.setEffect(null));
+        volumePanel.setOnMouseEntered(e -> volumePanel.setEffect(rectangleShadow));
+        volumePanel.setOnMouseExited(e -> volumePanel.setEffect(null));
 
-         DropShadow shadow = new DropShadow();
+        DropShadow shadow = new DropShadow();
         shadow.setColor(Color.WHITE);
         shadow.setRadius(10);
         shadow.setSpread(0.01);
@@ -123,11 +123,11 @@ public class ButtonConfig {
             double volumeCalc = (thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
-            mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0);
+            mediaPlayer.setVolume((double) (Config.Config.get("Volume")) / 100.0);
 
             bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
-            volumeText.setText("Volume " + ((int)((double) Config.Config.get("Volume"))));
+            volumeText.setText("Volume " + ((int) ((double) Config.Config.get("Volume"))));
 
             thumb.setCenterX(newX);
         });
@@ -136,18 +136,18 @@ public class ButtonConfig {
             double volumeCalc = (thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2)) / (volumePanelSizeX - volumePanelSizeY) * 100;
 
             Config.Config.put("Volume", volumeCalc);
-            mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0);
+            mediaPlayer.setVolume((double) (Config.Config.get("Volume")) / 100.0);
 
             bar.setWidth(thumb.getCenterX() - (StageWidth / 2 - volumePanelSizeX / 2 + volumePanelSizeY / 2 * 0.2) + volumePanelSizeY * 0.8 / 2);
 
-            volumeText.setText("Volume " + ((int)((double) Config.Config.get("Volume"))));
+            volumeText.setText("Volume " + ((int) ((double) Config.Config.get("Volume"))));
         });
 
-        thumb.setOnMouseEntered(e-> volumePanel.setEffect(rectangleShadow));
-        thumb.setOnMouseExited(e-> volumePanel.setEffect(null));
+        thumb.setOnMouseEntered(e -> volumePanel.setEffect(rectangleShadow));
+        thumb.setOnMouseExited(e -> volumePanel.setEffect(null));
 
-        bar.setOnMouseEntered(e-> volumePanel.setEffect(rectangleShadow));
-        bar.setOnMouseExited(e-> volumePanel.setEffect(null));
+        bar.setOnMouseEntered(e -> volumePanel.setEffect(rectangleShadow));
+        bar.setOnMouseExited(e -> volumePanel.setEffect(null));
 
         Node.getChildren().add(volumeTitle);
         Node.getChildren().add(volumeText);

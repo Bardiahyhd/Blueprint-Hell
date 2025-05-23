@@ -1,9 +1,15 @@
 package Graphics;
 
 import Config.Config;
+import GameSystem.GameSystem;
+import Pages.Game;
+import Pages.Menu;
 import javafx.animation.*;
 import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
@@ -23,6 +29,7 @@ public class Packet {
     private Timeline timeline;
     private FadeTransition fadeTransition;
     private ScaleTransition scaleTransition;
+    private KeyFrame keyFrame;
 
     private boolean onScaleTransition = true;
 
@@ -35,6 +42,10 @@ public class Packet {
     public double endX;
     public double endY;
     public PacketSystem otherSystem;
+
+    public Line currentLine;
+    public Circle bubble1;
+    public Circle bubble2;
 
     public Packet(Group group, int PacketKind, double startX, double startY, PacketSystem onSystem) {
         packet = new Polygon();
@@ -71,11 +82,12 @@ public class Packet {
         packet.setLayoutY(startY);
     }
 
-    private Group group;
+    private Pane group;
     private Packet pointpacket;
 
-    public Packet(Group group, int PacketKind, double startX, double startY, double endX, double endY, Packet pointpacket) {
+    public Packet(Pane group, int PacketKind, double startX, double startY, double endX, double endY, Packet pointpacket) {
         packet = new Polygon();
+        packet.setCache(false);
         group.getChildren().add(packet);
 
         this.group = group;
@@ -108,18 +120,18 @@ public class Packet {
 
         KeyValue keyX = new KeyValue(packet.layoutXProperty(), endX);
         KeyValue keyY = new KeyValue(packet.layoutYProperty(), endY);
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(dis/ packetSpeed), keyX, keyY);
+        keyFrame = new KeyFrame(Duration.seconds(dis/ packetSpeed), keyX, keyY);
 
         timeline = new Timeline(keyFrame);
         timeline.setCycleCount(1);
 
-        scaleTransition = new ScaleTransition(Duration.seconds(0.0015 * packetSpeed), packet);
-        scaleTransition.setFromX(0.0);
-        scaleTransition.setFromY(0.0);
+        scaleTransition = new ScaleTransition(Duration.seconds(0.0004 * packetSpeed), packet);
+        scaleTransition.setFromX(0.1);
+        scaleTransition.setFromY(0.1);
         scaleTransition.setToX(1.0);
         scaleTransition.setToY(1.0);
 
-        fadeTransition = new FadeTransition(Duration.seconds(0.0015 * packetSpeed), packet);
+        fadeTransition = new FadeTransition(Duration.seconds(0.0004 * packetSpeed), packet);
         fadeTransition.setFromValue(0.0);
         fadeTransition.setToValue(1.0);
 
@@ -127,15 +139,14 @@ public class Packet {
             if (scaleTransition.getFromX() == 1.0) {
                 group.getChildren().remove(packet);
                 PacketSystem.movingPackets.remove(this);
-                pointpacket.otherSystem.push_element(PacketKind);
+                pointpacket.otherSystem.push_element(this);
                 pointpacket.packetonLine = false;
                 pointpacket.onSystem.lunch();
             }
             else {
+                onScaleTransition = false;
                 timeline.play();
             }
-
-            onScaleTransition = false;
         });
 
         timeline.setOnFinished(e -> {
@@ -143,8 +154,8 @@ public class Packet {
 
             scaleTransition.setFromX(1.0);
             scaleTransition.setFromY(1.0);
-            scaleTransition.setToX(0.0);
-            scaleTransition.setToY(0.0);
+            scaleTransition.setToX(0.1);
+            scaleTransition.setToY(0.1);
 
             fadeTransition.setFromValue(1.0);
             fadeTransition.setToValue(0.0);
@@ -164,34 +175,59 @@ public class Packet {
     }
 
     public void pause() {
-        if (onScaleTransition) {
-            scaleTransition.pause();
-            fadeTransition.pause();
-        } else {
-            timeline.pause();
-        }
+        scaleTransition.pause();
+        fadeTransition.pause();
+        timeline.pause();
+    }
+
+    public void stop() {
+        scaleTransition.stop();
+        fadeTransition.stop();
+        timeline.stop();
     }
 
     public void delete() {
         pause();
+
         group.getChildren().remove(packet);
+        PacketSystem.packs.getChildren().remove(packet);
         PacketSystem.movingPackets.remove(this);
+
         pointpacket.packetonLine = false;
         pointpacket.onSystem.lunch();
+
+        Game.level.adddes();
     }
 
-    private double touchmove = 1;
+    public void ColorRefresh() {
+        if (noiseCapacity == 2 && PacketKind != 2) {
+            packet.setFill(Color.ORANGERED);
+        } else if (noiseCapacity == 1) {
+            packet.setFill(Color.DARKRED);
+        }
+    }
+
+    private double touchmove = 0.4;
     public double Xtranslate;
     public double Ytranslate;
+    private double impactradius = 30;
 
     public void touched(Double X, Double Y) {
-        if (noiseCapacity == 0) {
-            delete();
-        } else {
-            packet.setTranslateX(touchmove * (packet.getLayoutX() + packet.getTranslateX() - X));
-            packet.setTranslateY(touchmove * (packet.getLayoutY() + packet.getTranslateY() - Y));
-            noiseCapacity--;
+        for (Packet ps : PacketSystem.movingPackets) {
+            if (Math.sqrt(Math.pow((ps.packet.getLayoutX() + ps.packet.getTranslateX() - X), 2) + Math.pow((ps.packet.getLayoutY() + ps.packet.getTranslateY() - Y), 2)) <= impactradius) {
+                if (noiseCapacity <= 1) {
+                    ps.delete();
+                } else {
+                    ps.packet.setTranslateX(Math.min(touchmove * (ps.packet.getLayoutX() + ps.packet.getTranslateX() - X), Math.signum(ps.packet.getLayoutX() + ps.packet.getTranslateX() - X) * 4));
+                    ps.packet.setTranslateY(Math.min(touchmove * (ps.packet.getLayoutY() + ps.packet.getTranslateY() - Y), Math.signum((ps.packet.getLayoutY() + ps.packet.getTranslateY() - Y)) * 4));
+                    ps.Xtranslate = ps.packet.getTranslateX();
+                    ps.Ytranslate = ps.packet.getTranslateY();
+                    ps.noiseCapacity--;
+                    ps.ColorRefresh();
+                }
+            }
         }
+
     }
 
     public void doesTouch(Packet other) {
@@ -199,7 +235,17 @@ public class Packet {
 
         if (intersection.getBoundsInLocal().getWidth() > 0 && intersection.getBoundsInLocal().getHeight() > 0) {
             touched(intersection.getBoundsInLocal().getCenterX(), intersection.getBoundsInLocal().getCenterY());
-            other.touched(intersection.getBoundsInLocal().getCenterX(), intersection.getBoundsInLocal().getCenterY());
+            // other.touched(intersection.getBoundsInLocal().getCenterX(), intersection.getBoundsInLocal().getCenterY());
         }
+    }
+
+    public boolean knockedout() {
+        Shape intersection = Shape.intersect(packet, pointpacket.currentLine);
+        Shape intersection2 = Shape.intersect(packet, pointpacket.bubble1);
+        Shape intersection3 = Shape.intersect(packet, pointpacket.bubble2);
+
+        if (onScaleTransition)
+            return false;
+        return !(((intersection3.getBoundsInLocal().getWidth() > 0 && intersection3.getBoundsInLocal().getHeight() > 0) || (intersection2.getBoundsInLocal().getWidth() > 0 && intersection2.getBoundsInLocal().getHeight() > 0) || (intersection.getBoundsInLocal().getWidth() > 0 && intersection.getBoundsInLocal().getHeight() > 0)));
     }
 }
