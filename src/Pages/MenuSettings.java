@@ -29,7 +29,7 @@ public class MenuSettings {
         Nodes.getChildren().add(Background);
 
         Button back = ButtonConfig.Button("Back", +1);
-        back.setOnAction( e -> {
+        back.setOnAction(e -> {
             Menu.MenuCreator(PrimaryStage, mediaPlayer);
         });
 

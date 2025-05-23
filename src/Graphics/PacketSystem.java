@@ -173,7 +173,6 @@ public class PacketSystem {
         if (prime) {
             Polygon star = createStar(X, Y + 15, 20, 10, 5);
             star.setFill(Color.GOLD);
-            star.setStroke(Color.BLACK);
             elements.getChildren().add(star);
         }
 

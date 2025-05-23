@@ -39,7 +39,7 @@ public class Menu {
         } else {
             play.setText("Continue");
         }
-        play.setOnAction( e -> {
+        play.setOnAction(e -> {
             Game.StartGame(PrimaryStage, mediaPlayer, 1);
         });
 
@@ -54,7 +54,7 @@ public class Menu {
         });
 
         Button exit = ButtonConfig.Button("Exit", +2);
-        exit.setOnAction( e -> {
+        exit.setOnAction(e -> {
             try {
                 Config.RefreshConfig();
             } catch (IOException ex) {

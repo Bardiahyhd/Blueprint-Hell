@@ -89,7 +89,7 @@ public class ButtonConfig {
         Text temporalText = new Text("Time Temporal 0s");
         temporalText.setFont(Font.font("Comic Sans MS", 20));
         temporalText.setFill(Color.WHITE);
-        temporalText.setX(-20 + StageWidth / 2  + 20 + temporalXmove + temporalPanelSizeX / 2 + temporalPanelSizeY / 2);
+        temporalText.setX(-20 + StageWidth / 2 + 20 + temporalXmove + temporalPanelSizeX / 2 + temporalPanelSizeY / 2);
         temporalText.setY(StageHeight / 2 + temporalTitleMove + 6 + temporalYmove);
 
         temporalTitle.setFill(Color.web("#6e6a86"));

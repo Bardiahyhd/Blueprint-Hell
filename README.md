@@ -1,5 +1,5 @@
 <pre>
 Hello people!
-this is a game in process...
-Changed name check
+A random project for uni
+the most disgusting code i ever programmed
 </pre>

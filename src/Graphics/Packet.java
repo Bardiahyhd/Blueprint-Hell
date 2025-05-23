@@ -98,7 +98,7 @@ public class Packet {
 
         health = new Text(Integer.toString(noiseCapacity));
         health.setFill(Color.WHITE);
-        //group.getChildren().add(health);
+        // group.getChildren().add(health);
 
         id = Config.generalid;
         Config.generalid++;
@@ -138,7 +138,23 @@ public class Packet {
 
         KeyValue keyX = new KeyValue(packet.layoutXProperty(), endX);
         KeyValue keyY = new KeyValue(packet.layoutYProperty(), endY);
-        keyFrame = new KeyFrame(Duration.seconds(dis/ packetSpeed), keyX, keyY);
+
+        if (PacketKind == 2) {
+            if (pointpacket.PacketKind == PacketKind) {
+                keyFrame = new KeyFrame(Duration.seconds(dis / (packetSpeed / 2)), keyX, keyY);
+            } else {
+                keyFrame = new KeyFrame(Duration.seconds(dis / (packetSpeed)), keyX, keyY);
+            }
+        } else {
+            if (pointpacket.PacketKind == PacketKind) {
+                keyFrame = new KeyFrame(Duration.seconds(dis / (packetSpeed / 2)), keyX, keyY);
+            } else {
+                Interpolator accelerate = Interpolator.SPLINE(0.5, 0.0, 1.0, 1.0);
+                keyX = new KeyValue(packet.layoutXProperty(), endX, accelerate);
+                keyY = new KeyValue(packet.layoutYProperty(), endY, accelerate);
+                keyFrame = new KeyFrame(Duration.seconds(dis / (packetSpeed / 2)), keyX, keyY);
+            }
+        }
 
         timeline = new Timeline(keyFrame);
         timeline.setCycleCount(1);
@@ -160,8 +176,7 @@ public class Packet {
                 pointpacket.otherSystem.push_element(this);
                 pointpacket.packetonLine = false;
                 pointpacket.onSystem.lunch();
-            }
-            else {
+            } else {
                 onScaleTransition = false;
                 timeline.play();
             }
@@ -218,6 +233,12 @@ public class Packet {
     }
 
     public void ColorRefresh() {
+        if (noiseCapacity == 3) {
+            packet.setFill(Color.web("#f6c177"));
+        }
+        if (noiseCapacity == 2 && PacketKind == 2) {
+            packet.setFill(Color.web("#9ccfd8"));
+        }
         if (noiseCapacity == 2 && PacketKind != 2) {
             packet.setFill(Color.ORANGERED);
         }
@@ -229,12 +250,12 @@ public class Packet {
     private double touchmove = 0.4;
     public double Xtranslate;
     public double Ytranslate;
-    private double impactradius = 30;
+    private double impactradius = 60;
     private double impactjump = 4;
     public boolean vis = false;
     public boolean inVanurable = false;
 
-    public void touched(Double X, Double Y) {
+    public void touched(Double X, Double Y, Packet x, Packet y) {
         if (Game.ontemporal) {
             return;
         }
@@ -246,18 +267,29 @@ public class Packet {
         O.setTabSize(20);
         O.setLayoutX(X);
         O.setLayoutY(Y);
-        //group.getChildren().add(O);
-        for (Packet ps : PacketSystem.movingPackets){
-            ps.vis = false;
-        }
+        // group.getChildren().add(O);
         for (Packet ps : PacketSystem.movingPackets) {
+            // System.out.println("seen"+ ps.id);
+            ps.vis = false;
+            if (!Game.impacteffect) {
+                ps.vis = true;
+                if (ps.id == x.id || ps.id == y.id) {
+                    ps.vis = false;
+                }
+            }
+        }
+
+        ArrayList<Packet> abouttodelete = new ArrayList<>();
+
+        for (Packet ps : PacketSystem.movingPackets) {
+            // System.out.println("touched"+ ps.id);
             if (!ps.vis) {
                 if (!ps.inVanurable) {
                     if (Math.sqrt(Math.pow((ps.packet.getLayoutX() + ps.packet.getTranslateX() - X), 2) + Math.pow((ps.packet.getLayoutY() + ps.packet.getTranslateY() - Y), 2)) <= impactradius) {
                         cnttt++;
                         O.setText("X" + cnttt);
                         if (ps.noiseCapacity <= 1) {
-                            ps.delete();
+                            abouttodelete.add(ps);
                         } else {
                             if ((Math.signum(ps.packet.getLayoutX() + ps.packet.getTranslateX() - X)) < 0) {
                                 ps.packet.setTranslateX(ps.packet.getTranslateX() + Math.max(touchmove * (ps.packet.getLayoutX() + ps.packet.getTranslateX() - X), (Math.signum(ps.packet.getLayoutX() + ps.packet.getTranslateX() - X)) * impactjump));
@@ -278,7 +310,7 @@ public class Packet {
                             }));
                             timer.setCycleCount(100);
                             timer.play();
-                            timer.setOnFinished( e -> {
+                            timer.setOnFinished(e -> {
                                 ps.inVanurable = false;
                             });
                         }
@@ -288,12 +320,17 @@ public class Packet {
             }
         }
 
+        for (Packet pcc : abouttodelete) {
+            pcc.delete();
+        }
     }
 
     public void doesTouch(Packet other) {
         Shape intersection = Shape.intersect(packet, other.packet);
         if (intersection.getBoundsInLocal().getWidth() > 0 && intersection.getBoundsInLocal().getHeight() > 0) {
-            touched((packet.getLayoutX() + packet.getTranslateX() + other.packet.getLayoutX() + other.packet.getTranslateX()) / 2 , (packet.getLayoutY() + packet.getTranslateY() + other.packet.getLayoutY() + other.packet.getTranslateY()) / 2);
+            if (Game.conflicteffect) {
+                touched((packet.getLayoutX() + packet.getTranslateX() + other.packet.getLayoutX() + other.packet.getTranslateX()) / 2, (packet.getLayoutY() + packet.getTranslateY() + other.packet.getLayoutY() + other.packet.getTranslateY()) / 2, this, other);
+            }
         }
     }
 

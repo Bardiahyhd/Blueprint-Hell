@@ -28,17 +28,17 @@ public class LevelPage {
         Nodes.getChildren().add(Background);
 
         Button lvl1 = ButtonConfig.Button("Level 1", -1);
-        lvl1.setOnAction( e -> {
+        lvl1.setOnAction(e -> {
             Game.StartGame(PrimaryStage, mediaPlayer, 1);
         });
 
         Button lvl2 = ButtonConfig.Button("Level 2", 0);
-        lvl2.setOnAction( e -> {
+        lvl2.setOnAction(e -> {
             Game.StartGame(PrimaryStage, mediaPlayer, 2);
         });
 
         Button back = ButtonConfig.Button("Back", +1);
-        back.setOnAction( e -> {
+        back.setOnAction(e -> {
             Menu.MenuCreator(PrimaryStage, mediaPlayer);
         });
 

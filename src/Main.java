@@ -33,7 +33,7 @@ public class Main extends Application {
         mediaPlayer = new MediaPlayer(MenuSong);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.play();
-        mediaPlayer.setVolume((double)(Config.Config.get("Volume")) / 100.0);
+        mediaPlayer.setVolume((double) (Config.Config.get("Volume")) / 100.0);
 
         PrimaryStage.setWidth(StageWidth);
         PrimaryStage.setHeight(StageHeight);

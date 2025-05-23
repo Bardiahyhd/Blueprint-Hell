@@ -15,14 +15,16 @@ import java.util.Map;
 public class Config {
 
     public static int generalid = 1;
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    ;
     public static Map<String, Object> Config = new HashMap();
 
     public static void LoadConfig() throws IOException {
         try (FileReader reader = new FileReader("config.json")) {
-            Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
+            Type mapType = new TypeToken<Map<String, Object>>() {
+            }.getType();
             Config = gson.fromJson(reader, mapType);
-        } catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -32,7 +34,7 @@ public class Config {
             FileWriter writer = new FileWriter("config.json");
             gson.toJson(Config, writer);
             writer.close();
-        } catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
