@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class Config {
 
+    public static int generalid = 1;
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();;
     public static Map<String, Object> Config = new HashMap();
 

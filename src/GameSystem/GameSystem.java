@@ -15,7 +15,7 @@ public class GameSystem {
 
     public void adddes() {
         destroyedpackets++;
-        Game.lostpackets.setText("Destroyed Packets : " + destroyedpackets + "/" + totalPackets);
+        Game.lostpackets.setText("Packet Loss : " + destroyedpackets + "/" + totalPackets);
     }
 
     public GameSystem(double wireLimit, int packetrect, int packettri, int timelimit) {

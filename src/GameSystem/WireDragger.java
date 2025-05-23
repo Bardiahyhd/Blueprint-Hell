@@ -3,6 +3,7 @@ package GameSystem;
 import Graphics.Packet;
 import Graphics.PacketSystem;
 import Pages.Game;
+import SoundEffects.SoundEffects;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -117,6 +118,7 @@ public class WireDragger {
                 if (packet.PacketKind == 1) {
                     for (Packet other : PacketSystem.triangleIn) {
                         if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + gameSystem.wireUsed <= gameSystem.wireLimit) {
+                            SoundEffects.ConnectedSoundEffect();
                             gameSystem.wireUsed += lineLength();
                             Game.wireUsedBar.setWidth((gameSystem.wireLimit - gameSystem.wireUsed) / gameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();
@@ -154,6 +156,7 @@ public class WireDragger {
                 if (packet.PacketKind == 2) {
                     for (Packet other : PacketSystem.rectIn) {
                         if (other.onSystem != packet.onSystem && !other.onLine && event.getTarget() == other.packet && lineLength() + gameSystem.wireUsed <= gameSystem.wireLimit) {
+                            SoundEffects.ConnectedSoundEffect();
                             gameSystem.wireUsed += lineLength();
                             Game.wireUsedBar.setWidth((gameSystem.wireLimit - gameSystem.wireUsed) / gameSystem.wireLimit * 392);
                             packet.onSystem.checkLight();

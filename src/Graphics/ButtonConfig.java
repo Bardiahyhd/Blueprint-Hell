@@ -196,6 +196,8 @@ public class ButtonConfig {
         show.setLayoutX(85 + StageWidth / 2 + temporalXmove - temporalPanelSizeX / 2 - temporalPanelSizeY / 2 - temporalTitleSizeX);
         show.setLayoutY(StageHeight / 2 - temporalTitleSizeY / 2 + temporalTitleMove + temporalYmove);
 
+        ButtonConfig.show.setStyle("-fx-background-color: #191724;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
+
         Node.getChildren().add(show);
     }
 

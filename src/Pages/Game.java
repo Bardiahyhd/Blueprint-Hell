@@ -167,7 +167,7 @@ public class Game {
         packets.setStyle("-fx-background-color: #191724;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
         HUD.getChildren().add(packets);
 
-        lostpackets.setText("Destroyed Packets : " + level.destroyedpackets + "/" + level.totalPackets);
+        lostpackets.setText("Packet Loss : " + level.destroyedpackets + "/" + level.totalPackets);
         lostpackets.setFill(Color.WHITE);
         lostpackets.setLayoutX(StageWidth / 2 + 150);
         lostpackets.setLayoutY(100);
@@ -224,9 +224,14 @@ public class Game {
             systemsArray.add(s4);
             systemsArray.add(s5);
         }
-        Pane random2 = new Pane();
 
-        Packet xp = new Packet(random2, 1, 0, 0, 0, 0, p1.outputPacketRect.get(0));
+        Group random = new Group();
+        Pane random2 = new Pane();
+        Scene random3 = new Scene(random2);
+        GameSystem random4 = new GameSystem(0, 0, 0, 0);
+        PacketSystem xpprime =  new PacketSystem(random3, random2, random, random, 0, 0, 0, 0, 0, 0, false, random4);
+        Packet xp0 = new Packet(random, 0, 0, 0, xpprime);
+        Packet xp = new Packet(random2, 1, 0, 0, 0, 0, xp0);
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1), event -> {
             if (level.packettri > 0) {
@@ -245,14 +250,21 @@ public class Game {
                 level.packetrect--;
             }
             p1.lunch();
-            for (int i = 0; i < PacketSystem.movingPackets.size(); i++) {
-                Packet x = PacketSystem.movingPackets.get(i);
-                for (int j = i + 1; j < PacketSystem.movingPackets.size(); j++) {
-                    Packet y = PacketSystem.movingPackets.get(j);
-                    x.doesTouch(y);
-                }
+            for (Packet x : PacketSystem.movingPackets){
+                x.health.setText(Integer.toString(x.noiseCapacity));
+            }
+            for (Packet x : PacketSystem.movingPackets){
                 if (x.knockedout()) {
                     x.delete();
+                }
+            }
+            for (Packet x : PacketSystem.movingPackets) {
+                for (Packet y : PacketSystem.movingPackets) {
+                    if (x.id != y.id) {
+                        if (!x.inVanurable && !y.inVanurable) {
+                            x.doesTouch(y);
+                        }
+                    }
                 }
             }
         }));
@@ -419,7 +431,7 @@ public class Game {
 
 
         ButtonConfig.show.setOnAction( e -> {
-            if(isPlayable()) {
+            if(isPlayable() && ontemporal == live) {
                 if (ButtonConfig.show.getText().equalsIgnoreCase("show")) {
                     ontemporal = true;
                     ButtonConfig.show.setText("Cancel");
@@ -638,7 +650,7 @@ public class Game {
         packets.setFont(Font.font("Comic Sans MS", 37));
         packets.setStyle("-fx-background-color: #191724;" + "-fx-padding: 10 20;" + "-fx-background-radius: 30;");
 
-        lostpackets.setText("Destroyed Packets : " + level.destroyedpackets + "/" + level.totalPackets);
+        lostpackets.setText("Packet Loss : " + level.destroyedpackets + "/" + level.totalPackets);
         lostpackets.setFill(Color.WHITE);
         lostpackets.setLayoutX(StageWidth / 2 + 150);
         lostpackets.setLayoutY(100);

@@ -23,7 +23,7 @@ public class Main extends Application {
         final double StageWidth = parseDouble(Config.Config.get("StageWidth").toString());
         final double StageHeight = parseDouble(Config.Config.get("StageHeight").toString());
 
-        File BackgroundSong = new File("Guitarmass-Infected_Mushroom.mp3"); // Adjust the path if needed
+        File BackgroundSong = new File("Guitarmass-Infected_Mushroom.mp3");
         if (!BackgroundSong.exists()) {
             System.out.println("File not found: " + BackgroundSong.getAbsolutePath());
             return;

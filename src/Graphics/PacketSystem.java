@@ -324,7 +324,7 @@ public class PacketSystem {
         } else if (ps.PacketKind == 2) {
             gm.coins++;
         }
-        Game.lostpackets.setText("Destroyed Packets : " + gm.destroyedpackets + "/" + gm.totalPackets);
+        Game.lostpackets.setText("Packet Loss : " + gm.destroyedpackets + "/" + gm.totalPackets);
         Game.packets.setText("Packets : " + gm.packetsReceived + "/" + gm.totalPackets);
         Game.coins.setText("Coins :" + gm.coins);
     }
