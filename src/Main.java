@@ -6,6 +6,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.net.URL;
 
 import static java.lang.Double.parseDouble;
 
@@ -20,10 +21,13 @@ public class Main extends Application {
     public void start(Stage PrimaryStage) throws Exception {
         Config.LoadConfig();
 
+        PrimaryStage.setTitle("Blueprint Hell");
+
         final double StageWidth = parseDouble(Config.Config.get("StageWidth").toString());
         final double StageHeight = parseDouble(Config.Config.get("StageHeight").toString());
 
-        File BackgroundSong = new File("src/Guitarmass-Infected_Mushroom.mp3");
+        URL path = getClass().getResource("main/resources/Guitarmass-Infected_Mushroom.mp3");
+        File BackgroundSong = new File(path.toURI());
         if (!BackgroundSong.exists()) {
             System.out.println("File not found: " + BackgroundSong.getAbsolutePath());
             return;

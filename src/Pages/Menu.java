@@ -59,6 +59,8 @@ public class Menu {
                 Config.RefreshConfig();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
             PrimaryStage.close();
         });
