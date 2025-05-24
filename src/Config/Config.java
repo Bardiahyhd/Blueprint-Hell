@@ -20,7 +20,7 @@ public class Config {
     public static Map<String, Object> Config = new HashMap();
 
     public static void LoadConfig() throws IOException {
-        try (FileReader reader = new FileReader("config.json")) {
+        try (FileReader reader = new FileReader("src/config.json")) {
             Type mapType = new TypeToken<Map<String, Object>>() {
             }.getType();
             Config = gson.fromJson(reader, mapType);
@@ -31,7 +31,7 @@ public class Config {
 
     public static void RefreshConfig() throws IOException {
         try {
-            FileWriter writer = new FileWriter("config.json");
+            FileWriter writer = new FileWriter("src/config.json");
             gson.toJson(Config, writer);
             writer.close();
         } catch (FileNotFoundException e) {

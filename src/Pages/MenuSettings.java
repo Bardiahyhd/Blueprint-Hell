@@ -21,7 +21,7 @@ public class MenuSettings {
         Group Nodes = new Group();
         Scene MenuSettingsScene = new Scene(Nodes);
 
-        Image MenuBackground = new Image("File:MenuSettingBackground.png");
+        Image MenuBackground = new Image("MenuSettingBackground.png");
         ImageView IV = new ImageView(MenuBackground);
         IV.setFitWidth(StageWidth);
         IV.setFitHeight(StageHeight);

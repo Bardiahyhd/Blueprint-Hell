@@ -254,7 +254,7 @@ public class Game {
         shopCircle.setStroke(Color.BLACK);
         shopCircle.setStrokeWidth(3);
         shopCircle.setFill(Color.WHITE);
-        Image cart = new Image("File:cart.png");
+        Image cart = new Image("cart.png");
         ImageView IV = new ImageView(cart);
         IV.setFitWidth(50);
         IV.setFitHeight(50);
